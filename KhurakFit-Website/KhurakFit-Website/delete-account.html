@@ -1,0 +1,46 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Delete your account · Khurak Fit</title><link rel="icon" type="image/png" href="icons/favicon-32.png"><style>
+:root{--bg:#F3F7F5;--card:#fff;--fg:#0F2A1F;--muted:#5B6E64;--acc:#15803D;--line:#DDE6E1;--bad:#B8402E}
+@media (prefers-color-scheme:dark){:root{--bg:#0B1712;--card:#12211A;--fg:#E8F2EC;--muted:#9BB0A5;--acc:#4ADE80;--line:#22362C;--bad:#EE7D6B}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:24px 16px 64px}header{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+header img{width:48px;height:48px;border-radius:12px}header b{font-size:20px}h1{font-size:28px;line-height:1.2;margin:16px 0 4px}
+h3{margin:24px 0 6px;font-size:18px}ul{padding-left:20px}li{margin:4px 0}a{color:var(--acc)}.upd{color:var(--muted);font-size:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:16px 0}
+label{display:block;font-size:14px;color:var(--muted);font-weight:600;margin:12px 0 4px}
+input{width:100%;font:inherit;padding:12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg)}
+button{font:inherit;font-weight:700;border:0;border-radius:12px;padding:13px 18px;margin-top:16px;cursor:pointer;background:var(--bad);color:#fff;width:100%}
+button:disabled{opacity:.6}.msg{margin-top:12px;padding:12px;border-radius:12px;background:var(--bg)}.ok{color:var(--acc)}.err{color:var(--bad)}
+footer{margin-top:32px;color:var(--muted);font-size:14px}
+</style></head>
+<body><main><header><img src="icons/icon-192.png" alt=""><b>Khurak Fit</b></header><h1>Delete your Khurak Fit account</h1>
+<p>Deleting your account removes your sign-in and your online backup straight away. It can't be undone.</p>
+<div class="card"><h3 style="margin-top:0">The quickest way: in the app</h3>
+<ol><li>Open Khurak Fit and tap <b>Me</b>.</li><li>Tap <b>Account &amp; backup</b>, then <b>Delete my account</b>.</li><li>Type your password and tap <b>Delete account and backup</b>.</li></ol>
+<p>To also erase the data on your phone, tap <b>Also erase everything on this phone</b>, or use <b>Me → Reset app</b>.</p></div>
+<div class="card" id="web"><h3 style="margin-top:0">Or delete it here</h3>
+<p>Sign in with the email and password you use in Khurak Fit.</p>
+<label for="em">Email</label><input id="em" type="email" autocomplete="email">
+<label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">
+<button id="go">Delete my account and backup</button><div id="out" class="msg" hidden></div></div>
+<h3>What gets deleted</h3><ul><li>Your account (email address and sign-in).</li><li>Your online backup: profile, health details, food log, workouts, steps, weight log and photos.</li><li>AI usage counts are removed automatically within 2 days.</li></ul>
+<p>Data on your phone stays until you reset or uninstall the app. Can't sign in? Write to us from the address on your account, using the contact email on our Google Play page and we'll delete it for you within 30 days.</p>
+<script>
+const KF_CLOUD={apiKey:"AIzaSyDp0agMMJBevFX54jeGt6XXwAnVb0oUjDk",dbURL:"https://khurak-fit-default-rtdb.firebaseio.com"};
+const $=s=>document.querySelector(s),out=$("#out");
+if(!KF_CLOUD.apiKey){$("#web").innerHTML='<h3 style="margin-top:0">Or ask us</h3><p>Write to us from the address on your account, using the contact email on our Google Play page and we will delete it within 30 days.</p>'}
+function say(t,cls){out.hidden=false;out.className="msg "+(cls||"");out.textContent=t}
+const ERR={INVALID_LOGIN_CREDENTIALS:"Wrong email or password.",EMAIL_NOT_FOUND:"Wrong email or password.",INVALID_PASSWORD:"Wrong email or password.",TOO_MANY_ATTEMPTS_TRY_LATER:"Too many tries. Wait a few minutes.",USER_DISABLED:"This account is turned off."};
+async function auth(path,body){const r=await fetch("https://identitytoolkit.googleapis.com/v1/"+path+"?key="+encodeURIComponent(KF_CLOUD.apiKey),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok){const c=String(j.error&&j.error.message||"").split(" ")[0];throw new Error(ERR[c]||"Something went wrong. Try again.")}return j}
+$("#go")&&$("#go").addEventListener("click",async()=>{
+ const em=$("#em").value.trim(),pw=$("#pw").value;if(!em||!pw){say("Type your email and password.","err");return}
+ if(!confirm("Delete your Khurak Fit account and backup for good?"))return;
+ $("#go").disabled=true;say("Deleting…");
+ try{const j=await auth("accounts:signInWithPassword",{email:em,password:pw,returnSecureToken:true});
+  await fetch(KF_CLOUD.dbURL.replace(/\/+$/,"")+"/users/"+j.localId+".json?auth="+encodeURIComponent(j.idToken),{method:"DELETE"});
+  await auth("accounts:delete",{idToken:j.idToken});
+  say("Done. Your account and online backup are deleted.","ok");$("#pw").value=""}
+ catch(e){say(e.message||"Something went wrong.","err");$("#go").disabled=false}
+});
+</script>
+<footer><a href="./">Open Khurak Fit</a> · <a href="privacy.html">Privacy policy</a> · <a href="delete-account.html">Delete your account</a></footer></main></body></html>
