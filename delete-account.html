@@ -24,11 +24,11 @@ footer{margin-top:32px;color:var(--muted);font-size:14px}
 <label for="pw">Password</label><input id="pw" type="password" autocomplete="current-password">
 <button id="go">Delete my account and backup</button><div id="out" class="msg" hidden></div></div>
 <h3>What gets deleted</h3><ul><li>Your account (email address and sign-in).</li><li>Your online backup: profile, health details, food log, workouts, steps, weight log and photos.</li><li>AI usage counts are removed automatically within 2 days.</li></ul>
-<p>Data on your phone stays until you reset or uninstall the app. Can't sign in? Write to us from the address on your account, using the contact email on our Google Play page and we'll delete it for you within 30 days.</p>
+<p>Data on your phone stays until you reset or uninstall the app. Can't sign in? Email <a href="mailto:zz.developers89@gmail.com">zz.developers89@gmail.com</a> from the address on your account and we'll delete it for you within 30 days.</p>
 <script>
 const KF_CLOUD={apiKey:"AIzaSyDp0agMMJBevFX54jeGt6XXwAnVb0oUjDk",dbURL:"https://khurak-fit-default-rtdb.firebaseio.com"};
 const $=s=>document.querySelector(s),out=$("#out");
-if(!KF_CLOUD.apiKey){$("#web").innerHTML='<h3 style="margin-top:0">Or ask us</h3><p>Write to us from the address on your account, using the contact email on our Google Play page and we will delete it within 30 days.</p>'}
+if(!KF_CLOUD.apiKey){$("#web").innerHTML='<h3 style="margin-top:0">Or ask us</h3><p>Email <a href="mailto:zz.developers89@gmail.com">zz.developers89@gmail.com</a> from the address on your account and we will delete it within 30 days.</p>'}
 function say(t,cls){out.hidden=false;out.className="msg "+(cls||"");out.textContent=t}
 const ERR={INVALID_LOGIN_CREDENTIALS:"Wrong email or password.",EMAIL_NOT_FOUND:"Wrong email or password.",INVALID_PASSWORD:"Wrong email or password.",TOO_MANY_ATTEMPTS_TRY_LATER:"Too many tries. Wait a few minutes.",USER_DISABLED:"This account is turned off."};
 async function auth(path,body){const r=await fetch("https://identitytoolkit.googleapis.com/v1/"+path+"?key="+encodeURIComponent(KF_CLOUD.apiKey),{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)});const j=await r.json().catch(()=>({}));if(!r.ok){const c=String(j.error&&j.error.message||"").split(" ")[0];throw new Error(ERR[c]||"Something went wrong. Try again.")}return j}
