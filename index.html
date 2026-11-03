@@ -2738,7 +2738,7 @@ function vGuest(head){
 }
 
 /* ================= GUEST COACH (no login, works offline) ================= */
-function nextMealKey(){const h=new Date().getHours()*60+new Date().getMinutes();const ms=S.reminders.filter(r=>MEALS.includes(r.id)).map(r=>{const [a,b]=r.time.split(":").map(Number);return{id:r.id,t:a*60+b}}).sort((a,b)=>a.t-b.t);const n=ms.find(m=>m.t>h&&!S.eaten[m.id]);return n?n.id:null}
+function nextMealKey(){const h=new Date().getHours()*60+new Date().getMinutes();const ms=S.reminders.filter(r=>MEALS.includes(r.id)).map(r=>{const [a,b]=r.time.split(":").map(Number);return{id:r.id,t:a*60+b}}).sort((a,b)=>a.t-b.t);const due=ms.filter(m=>!S.eaten[m.id]&&m.t<=h+45&&m.t>=h-150).pop();if(due)return due.id;const n=ms.find(m=>m.t>h&&!S.eaten[m.id]);return n?n.id:null}
 const GUEST=[
  [/(before.*gym|after.*gym|pre.?workout|post.?workout)/,()=>`- **Before (1–2 hours):** carbs + some protein, like a banana with yogurt, or oats\n- **After (within 2 hours):** protein + carbs, like eggs with roti or bread, or chicken with rice\n- Drink water before, during and after.`],
  [/(calor|kcal|how much.*eat|target|budget)/,()=>{const c=calc(),e=eaten(),b=burned();return `Your daily target is **${c.target} kcal**. Today you've eaten **${e}** and burned **${b}** extra, so you have **${Math.max(0,c.target+b-e)} kcal** left.\n- Protein ${c.prot} g\n- Carbs ${c.carb} g\n- Fat ${c.fat} g`}],
@@ -2930,7 +2930,7 @@ function needsLive(){const r=needsCalc(CALC.needs);[["cnT",r.tdee],["cnL",r.lose
 let SCANSTAY=false;
 
 /* ================= MEAL MENUS WITH PICTURES, PROFILE PHOTO ================= */
-const APP_VERSION="1.13.1 · 3 Nov 2026";
+const APP_VERSION="1.13.2 · 3 Nov 2026";
 const FOOD_WIKI=[[/besan chilla/,"Chilla_(food)"],[/egg roll/,"Kati_roll"],[/omelette/,"Omelette"],[/shakshuka/,"Shakshouka"],[/bhurji|scrambled/,"Scrambled_eggs"],[/tea egg/,"Tea_egg"],[/egg custard/,"Chinese_steamed_eggs"],[/boiled egg|eggs?$|^\d? ?boiled/,"Boiled_egg"],
  [/roti|chapati/,"Chapati"],[/naan/,"Naan"],[/paratha/,"Paratha"],[/pita|khubz/,"Pita"],[/arepa/,"Arepa"],[/tortilla|taco/,"Taco"],[/bun/,"Mantou"],[/toast|bread/,"Whole_wheat_bread"],
  [/daliya/,"Dalia_(food)"],[/overnight oats|oats|porridge \(uji|uji/,"Porridge"],[/congee|bubur/,"Congee"],[/pap|ogi/,"Ogi_(food)"],
