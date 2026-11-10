@@ -11,7 +11,7 @@
 
 ## Automatic upload to the hosting
 
-Every change merged into `main` is uploaded to the hosting by **Actions → Upload website to hosting**. Only changed files are sent.
+Every change merged into `main` is uploaded into `public_html/` to the hosting by **Actions → Upload website to hosting**. Only changed files are sent.
 
 One-time setup, in this repository: **Settings → Secrets and variables → Actions**
 
@@ -27,7 +27,7 @@ One-time setup, in this repository: **Settings → Secrets and variables → Act
 
 | Name | When to set it |
 |---|---|
-| `FTP_DIR` | Folder the site goes in, ending with `/`. Leave empty if your FTP login opens straight into the website folder; use `public_html/` if it opens one level above it. |
+| `FTP_DIR` | Folder the site goes in, ending with `/`. Default is `public_html/` (cPanel hosting). Only set it if your host uses a different folder. |
 | `FTP_PROTOCOL` | `ftps` (default, encrypted). Change to `ftp` only if the upload fails with a TLS/SSL error. |
 | `FTP_PORT` | Only if your host uses a port other than 21. |
 
@@ -38,3 +38,5 @@ Then open **Actions → Upload website to hosting → Run workflow** to send the
 1. Check that https://khurakfit.com/privacy.html opens.
 2. In Play Console, change the privacy policy and account deletion links to the khurakfit.com addresses above.
 3. Then Settings → General → Danger zone → Change visibility → Private. (The free github.io copy of the site stops working at that point, which is fine once Play Console uses khurakfit.com.)
+
+The upload keeps cPanel's own blocks (PHP settings) at the top of `public_html/.htaccess`, so changes made in cPanel aren't lost.

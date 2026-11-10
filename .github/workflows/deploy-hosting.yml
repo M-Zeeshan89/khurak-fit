@@ -24,6 +24,19 @@ jobs:
       - uses: actions/checkout@v4
         if: steps.chk.outputs.ok == '1'
 
+      - name: Keep cPanel's own settings in .htaccess
+        if: steps.chk.outputs.ok == '1'
+        env:
+          S: ${{ secrets.FTP_SERVER }}
+          U: ${{ secrets.FTP_USERNAME }}
+          P: ${{ secrets.FTP_PASSWORD }}
+          D: ${{ vars.FTP_DIR || 'public_html/' }}
+        run: |
+          curl -sS --ssl-reqd -k --max-time 30 --user "$U:$P" "ftp://$S/${D}.htaccess" -o server.htaccess || true
+          awk '/^# (php -- )?BEGIN cPanel/{keep=1} keep{print} /^# (php -- )?END cPanel/{keep=0; print ""}' server.htaccess > cpanel.part 2>/dev/null || true
+          if [ -s cpanel.part ]; then cat cpanel.part .htaccess > merged && mv merged .htaccess; echo "Kept cPanel settings ($(grep -c . cpanel.part) lines)"; fi
+          rm -f server.htaccess cpanel.part
+
       - name: Upload changed files
         if: steps.chk.outputs.ok == '1'
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
@@ -33,7 +46,7 @@ jobs:
           password: ${{ secrets.FTP_PASSWORD }}
           protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
           port: ${{ vars.FTP_PORT || 21 }}
-          server-dir: ${{ vars.FTP_DIR || './' }}
+          server-dir: ${{ vars.FTP_DIR || 'public_html/' }}
           exclude: |
             **/.git*
             **/.git*/**
