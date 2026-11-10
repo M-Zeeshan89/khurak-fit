@@ -16,12 +16,11 @@ jobs:
           U: ${{ secrets.FTP_USERNAME }}
           P: ${{ secrets.FTP_PASSWORD }}
         run: |
-          for d in "" "public_html/" "domains/" "www/" "htdocs/"; do
-            echo "=== /$d"
-            curl -sS --ssl-reqd -k --max-time 25 --user "$U:$P" "ftp://$S/$d" 2>&1 | awk '{print $1, $NF}' | head -40 || true
-          done
-          echo "=== domains/khurakfit.com"
-          curl -sS --ssl-reqd -k --max-time 25 --user "$U:$P" "ftp://$S/domains/khurakfit.com/" 2>&1 | awk '{print $1, $NF}' | head -40 || true
-          curl -sS --ssl-reqd -k --max-time 25 --user "$U:$P" "ftp://$S/domains/khurakfit.com/public_html/" 2>&1 | awk '{print $1, $NF}' | head -40 || true
-          echo "=== login folder"
-          curl -sv --ssl-reqd -k --max-time 25 --user "$U:$P" "ftp://$S/" -l 2>&1 | grep -E "^< (2[0-9][0-9]|5)" | grep -v -i "pass\|user" | head -20 || true
+          sudo apt-get install -y -qq lftp >/dev/null 2>&1
+          echo "=== home/.htaccess"; curl -sS --ssl-reqd -k --user "$U:$P" "ftp://$S/.htaccess" | head -40
+          echo "=== public_html/.htaccess"; curl -sS --ssl-reqd -k --user "$U:$P" "ftp://$S/public_html/.htaccess" | head -60
+          echo "=== cleanup of files uploaded to the wrong folder"
+          RM="rm -f .ftp-deploy-sync-state.json 404.html delete-account.html index.html privacy.html robots.txt sitemap.xml support.html sw.js terms.html; rm -rf app assets"
+          if curl -sS --ssl-reqd -k --user "$U:$P" "ftp://$S/.htaccess" | head -1 | grep -q "Khurak Fit"; then RM="$RM; rm -f .htaccess"; fi
+          lftp -e "set ftp:ssl-force true; set ssl:verify-certificate no; $RM; cls -1; bye" -u "$U,$P" "$S" 2>&1 | grep -v -E "^\\.|^(etc|logs|mail|public_ftp|public_html|ssl|tmp|www)/?$" || true
+          echo "=== done"
