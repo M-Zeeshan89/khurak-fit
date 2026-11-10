@@ -7,18 +7,18 @@ on:
 jobs:
   check:
     runs-on: ubuntu-latest
+    timeout-minutes: 4
     steps:
-      - name: Find the cause of 403
+      - name: Try public_html permissions 755
         env:
           S: ${{ secrets.FTP_SERVER }}
           U: ${{ secrets.FTP_USERNAME }}
           P: ${{ secrets.FTP_PASSWORD }}
         run: |
-          sudo apt-get install -y -qq lftp >/dev/null 2>&1
-          L(){ lftp -e "set ftp:ssl-force true; set ssl:verify-certificate no; $1; bye" -u "$U,$P" "$S" 2>&1; }
           st(){ curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://khurakfit.com$1"; }
           echo "before: $(st /)"
-          L "chmod 755 public_html" | head -2
-          echo "home perms now: $(L 'cls -ld public_html' | awk '{print $1}')"
-          sleep 3; echo "after chmod 755: / $(st /)  /privacy.html $(st /privacy.html)  /app/ $(st /app/)"
+          curl -sS --ssl-reqd -k --max-time 30 --user "$U:$P" "ftp://$S/" -Q "SITE CHMOD 755 public_html" -l -o /dev/null -v 2>&1 | grep -E "^< (2|5)[0-9][0-9]" | grep -i -v "pass\|user\|welcome\|local time\|ipv6\|disconnected\|private system" || true
+          curl -sS --ssl-reqd -k --max-time 30 --user "$U:$P" "ftp://$S/" | grep public_html | awk '{print $1, $NF}'
+          sleep 3
+          echo "after: / $(st /)  /privacy.html $(st /privacy.html)  /app/ $(st /app/)"
           echo END
