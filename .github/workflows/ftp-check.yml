@@ -17,14 +17,8 @@ jobs:
           sudo apt-get install -y -qq lftp >/dev/null 2>&1
           L(){ lftp -e "set ftp:ssl-force true; set ssl:verify-certificate no; $1; bye" -u "$U,$P" "$S" 2>&1; }
           st(){ curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://khurakfit.com$1"; }
-          echo "=== permissions"; L "cd public_html; cls -l --sort=name" | awk '{print $1, $NF}'
-          echo "=== home perms"; L "cls -ld public_html" | awk '{print $1, $NF}'
-          echo "=== test file"; echo ok > t.txt; L "cd public_html; put t.txt; chmod 644 t.txt" >/dev/null
-          echo "t.txt with site .htaccess: $(st /t.txt)  index: $(st /)"
-          L "cd public_html; mv .htaccess .htaccess.kfbak" >/dev/null
-          echo "t.txt without .htaccess:  $(st /t.txt)  index: $(st /)"
-          L "cd public_html; mv .htaccess.kfbak .htaccess; rm t.txt" >/dev/null
-          echo "restored: $(L 'cd public_html; cls -1 .htaccess t.txt' | tr '\n' ' ')"
-          echo "=== cgi-bin probe: $(st /cgi-bin/)  well-known: $(st /.well-known/)"
-          echo "=== server ip"; getent hosts khurakfit.com; getent hosts "$S" | sed "s/$S/(ftp server)/"
+          echo "before: $(st /)"
+          L "chmod 755 public_html" | head -2
+          echo "home perms now: $(L 'cls -ld public_html' | awk '{print $1}')"
+          sleep 3; echo "after chmod 755: / $(st /)  /privacy.html $(st /privacy.html)  /app/ $(st /app/)"
           echo END
