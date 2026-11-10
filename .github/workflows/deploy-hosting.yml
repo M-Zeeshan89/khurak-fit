@@ -47,6 +47,7 @@ jobs:
           protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
           port: ${{ vars.FTP_PORT || 21 }}
           server-dir: ${{ vars.FTP_DIR || 'public_html/' }}
+          timeout: 300000
           exclude: |
             **/.git*
             **/.git*/**
