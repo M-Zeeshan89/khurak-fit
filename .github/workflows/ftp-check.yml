@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 4
     steps:
-      - name: Try public_html permissions 755
+      - name: Restore public_html permissions 750
         env:
           S: ${{ secrets.FTP_SERVER }}
           U: ${{ secrets.FTP_USERNAME }}
@@ -17,7 +17,7 @@ jobs:
         run: |
           st(){ curl -s -o /dev/null -w '%{http_code}' --max-time 20 "https://khurakfit.com$1"; }
           echo "before: $(st /)"
-          curl -sS --ssl-reqd -k --max-time 30 --user "$U:$P" "ftp://$S/" -Q "SITE CHMOD 755 public_html" -l -o /dev/null -v 2>&1 | grep -E "^< (2|5)[0-9][0-9]" | grep -i -v "pass\|user\|welcome\|local time\|ipv6\|disconnected\|private system" || true
+          curl -sS --ssl-reqd -k --max-time 30 --user "$U:$P" "ftp://$S/" -Q "SITE CHMOD 750 public_html" -l -o /dev/null -v 2>&1 | grep -E "^< (2|5)[0-9][0-9]" | grep -i -v "pass\|user\|welcome\|local time\|ipv6\|disconnected\|private system" || true
           curl -sS --ssl-reqd -k --max-time 30 --user "$U:$P" "ftp://$S/" | grep public_html | awk '{print $1, $NF}'
           sleep 3
           echo "after: / $(st /)  /privacy.html $(st /privacy.html)  /app/ $(st /app/)"
