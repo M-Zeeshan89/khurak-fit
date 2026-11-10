@@ -1,0 +1,42 @@
+name: Upload website to hosting
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-hosting
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check FTP details
+        id: chk
+        env:
+          SERVER: ${{ secrets.FTP_SERVER }}
+        run: |
+          if [ -n "$SERVER" ]; then echo "ok=1" >> "$GITHUB_OUTPUT"
+          else echo "::notice::Add the FTP_SERVER, FTP_USERNAME and FTP_PASSWORD secrets to upload the site to your hosting."; fi
+
+      - uses: actions/checkout@v4
+        if: steps.chk.outputs.ok == '1'
+
+      - name: Upload changed files
+        if: steps.chk.outputs.ok == '1'
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          port: ${{ vars.FTP_PORT || 21 }}
+          server-dir: ${{ vars.FTP_DIR || './' }}
+          exclude: |
+            **/.git*
+            **/.git*/**
+            .github/**
+            WEBSITE-SETUP.md
+            .nojekyll

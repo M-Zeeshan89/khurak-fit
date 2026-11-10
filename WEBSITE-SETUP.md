@@ -1,41 +1,40 @@
-# Khurak Fit website: iPhone app, privacy policy and account deletion
+# khurakfit.com · how the website works
 
-This folder is a complete website. Put it online for free with GitHub Pages and you get:
+| Address | What it is |
+|---|---|
+| https://khurakfit.com/ | Home page (features, video, FAQ) |
+| https://khurakfit.com/app/ | The web app (works on iPhone: Safari → Share → Add to Home Screen) |
+| https://khurakfit.com/privacy.html | Privacy policy (for Google Play) |
+| https://khurakfit.com/delete-account.html | Account deletion (for Google Play) |
+| https://khurakfit.com/terms.html | Terms of use |
+| https://khurakfit.com/support.html | Help & support (support@khurakfit.com) |
 
-- **The iPhone version.** People open the site in Safari and tap Share → **Add to Home Screen**. It then opens like an app, works offline and keeps its data on the phone. It also works on any computer or Android browser.
-- **Your privacy policy page** (`privacy.html`). Google Play requires a link to it.
-- **Your account deletion page** (`delete-account.html`). Google Play also requires this link for apps with accounts.
+## Automatic upload to the hosting
 
-## Put it online (about 5 minutes)
+Every change merged into `main` is uploaded to the hosting by **Actions → Upload website to hosting**. Only changed files are sent.
 
-1. On github.com, click **+ → New repository**. Name it `khurak-fit`, choose **Public** (GitHub Pages is free for public repositories), and click **Create repository**.
-2. Click **uploading an existing file**. Drag in **everything inside this folder**, including the `gifs` and `icons` folders and the hidden `.nojekyll` file. Click **Commit changes**.
-3. Open **Settings → Pages**. Under **Build and deployment**, choose **Deploy from a branch**, branch **main**, folder **/ (root)**, then **Save**.
-4. Wait 1–2 minutes. Your site will be at:
-   `https://YOUR-GITHUB-NAME.github.io/khurak-fit/`
+One-time setup, in this repository: **Settings → Secrets and variables → Actions**
 
-Your links for Google Play Console:
-- Privacy policy: `https://YOUR-GITHUB-NAME.github.io/khurak-fit/privacy.html`
-- Account deletion: `https://YOUR-GITHUB-NAME.github.io/khurak-fit/delete-account.html`
+**Secrets** (tab "Secrets" → New repository secret):
 
-## Fill in your details (once)
+| Name | Value (from your hosting panel → FTP accounts) |
+|---|---|
+| `FTP_SERVER` | FTP host, for example `ftp.khurakfit.com` or the IP address |
+| `FTP_USERNAME` | FTP username |
+| `FTP_PASSWORD` | FTP password |
 
-These appear in three places. The easiest way is to send the values to Claude, which will rebuild everything for you. To do it yourself, open each file in GitHub (pencil icon), use Ctrl+F, and edit:
+**Variables** (tab "Variables", only if needed):
 
-| What | Where | Line to edit |
-|---|---|---|
-| Support email | `index.html` and the Android `index.html` | `const KF_LINKS={contact:"you@example.com",site:"https://YOUR-NAME.github.io/khurak-fit"};` |
-| Backup server (from BACKUP-SETUP.md) | `index.html`, Android `index.html` and `delete-account.html` | `const KF_CLOUD={apiKey:"AIza...",dbURL:"https://...firebaseio.com"};` |
-| AI server (from AI-SERVER-SETUP.md) | `index.html` and Android `index.html` | `const KF_AI={url:"https://khurak-ai....workers.dev"};` |
+| Name | When to set it |
+|---|---|
+| `FTP_DIR` | Folder the site goes in, ending with `/`. Leave empty if your FTP login opens straight into the website folder; use `public_html/` if it opens one level above it. |
+| `FTP_PROTOCOL` | `ftps` (default, encrypted). Change to `ftp` only if the upload fails with a TLS/SSL error. |
+| `FTP_PORT` | Only if your host uses a port other than 21. |
 
-The privacy page shows your support email once `KF_LINKS.contact` is set and the site is rebuilt. Claude can do that for you.
+Then open **Actions → Upload website to hosting → Run workflow** to send the first upload.
 
-## Updating later
+## Before making this repository private
 
-Upload the new `index.html` (and any new files) to the same repository. The site updates within a minute, and installed iPhone apps pick up the new version the next time they're opened online.
-
-## What's different on iPhone
-
-- **Steps:** counted only while the app is open, after the person allows motion access. The Android app counts in the background.
-- **Reminders:** shown while the app is open. iPhone home-screen apps can't get the Android app's background alarms.
-- **Everything else works:** diet plans, calculator, barcode scan, workouts with the moving coach, languages, backup and the AI coach.
+1. Check that https://khurakfit.com/privacy.html opens.
+2. In Play Console, change the privacy policy and account deletion links to the khurakfit.com addresses above.
+3. Then Settings → General → Danger zone → Change visibility → Private. (The free github.io copy of the site stops working at that point, which is fine once Play Console uses khurakfit.com.)
