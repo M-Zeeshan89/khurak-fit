@@ -1,0 +1,6 @@
+# The web app needs a few more permissions than the website (camera for barcodes, motion for steps, food lookups).
+<IfModule mod_headers.c>
+Header always set Permissions-Policy "camera=(self), microphone=(self), accelerometer=(self), gyroscope=(self), geolocation=(), payment=(), usb=()"
+Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https:; media-src 'self' data: blob:; connect-src 'self' https:; manifest-src 'self'; worker-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self' mailto:; object-src 'none'; upgrade-insecure-requests"
+Header always set Cross-Origin-Resource-Policy "same-origin"
+</IfModule>
