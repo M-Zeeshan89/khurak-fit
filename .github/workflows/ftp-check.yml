@@ -1,0 +1,21 @@
+name: Check live website
+
+on:
+  push:
+    branches: [site-check]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check the live website
+        run: |
+          for u in / /app/ /privacy.html /delete-account.html /terms.html /support.html /nope /assets/promo.mp4 /app/gifs/jj-male.gif; do
+            printf "%-24s %s\n" "$u" "$(curl -s -o /dev/null -w '%{http_code} %{content_type} %{size_download}' --max-time 25 https://khurakfit.com$u)"
+          done
+          printf "%-24s %s\n" "http://" "$(curl -s -o /dev/null -w '%{http_code} -> %{redirect_url}' http://khurakfit.com/)"
+          printf "%-24s %s\n" "www" "$(curl -s -o /dev/null -w '%{http_code} -> %{redirect_url}' https://www.khurakfit.com/)"
+          curl -s https://khurakfit.com/ | grep -o '<title>[^<]*' || true
+          curl -sI https://khurakfit.com/ | grep -i -E "^server|^cache-control|^x-content" || true
+          echo | openssl s_client -connect khurakfit.com:443 -servername khurakfit.com 2>/dev/null | openssl x509 -noout -subject -issuer -enddate || true
+          echo END
