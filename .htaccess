@@ -1,5 +1,5 @@
 # Khurak Fit · server settings (Apache / LiteSpeed hosting)
-Options -Indexes
+Options -Indexes +SymLinksIfOwnerMatch
 DirectoryIndex index.html
 ErrorDocument 404 /404.html
 
