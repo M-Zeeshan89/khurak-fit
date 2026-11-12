@@ -54,11 +54,14 @@ p{margin:0}
 .progress{position:fixed;top:0;left:0;height:3px;width:100%;z-index:100;transform-origin:0 50%;transform:scaleX(0);background:linear-gradient(90deg,var(--glow),var(--lime))}
 
 /* header */
-.hdr{position:fixed;inset:0 0 auto 0;z-index:60;padding:14px 0;transition:padding .3s var(--ease);animation:dropin .8s var(--ease) both}
+.hdr{position:fixed;inset:0 0 auto 0;z-index:60;padding:14px 0;transition:padding .3s var(--ease);animation:dropin .8s var(--ease) backwards}
 @keyframes dropin{from{transform:translateY(-100%);opacity:0}}
-.hdr .bar{display:flex;align-items:center;gap:18px;height:64px;padding:0 10px 0 18px;border-radius:999px;transition:background .3s,box-shadow .3s,backdrop-filter .3s}
+/* The pill background sits on ::before, not on .bar: a backdrop-filter or transform on an
+   ancestor would trap the full-screen mobile menu (.nav, position:fixed) inside the header. */
+.hdr .bar{position:relative;display:flex;align-items:center;gap:18px;height:64px;padding:0 10px 0 18px;border-radius:999px}
+.hdr .bar::before{content:"";position:absolute;inset:0;z-index:-2;border-radius:inherit;pointer-events:none;transition:background .3s,box-shadow .3s,backdrop-filter .3s}
 .hdr.solid{padding:10px 0}
-.hdr.solid .bar,.hdr.light .bar{background:rgba(7,17,12,.78);backdrop-filter:saturate(1.6) blur(18px);-webkit-backdrop-filter:saturate(1.6) blur(18px);box-shadow:0 0 0 1px var(--edge),0 18px 40px -20px rgba(0,0,0,.6)}
+.hdr.solid .bar::before,.hdr.light .bar::before{background:rgba(7,17,12,.78);backdrop-filter:saturate(1.6) blur(18px);-webkit-backdrop-filter:saturate(1.6) blur(18px);box-shadow:0 0 0 1px var(--edge),0 18px 40px -20px rgba(0,0,0,.6)}
 .logo{display:flex;align-items:center;gap:11px;text-decoration:none;color:#fff;font:900 21px/1 var(--disp);letter-spacing:-.03em}
 .logo img{width:38px;height:38px;border-radius:11px;box-shadow:0 6px 18px -6px rgba(74,222,128,.6)}
 .logo b{color:var(--glow)}
@@ -74,8 +77,9 @@ p{margin:0}
 @media (max-width:940px){
   .burger{display:block}
   .hdr .cta{display:none}
-  .nav{position:fixed;inset:0;z-index:-1;flex-direction:column;justify-content:center;align-items:stretch;gap:4px;padding:100px 24px 40px;background:radial-gradient(120% 80% at 80% 0%,#0F3020,var(--ink) 60%);clip-path:circle(0 at calc(100% - 50px) 46px);transition:clip-path .6s var(--ease);margin:0}
+  .nav{position:fixed;inset:0;z-index:-1;flex-direction:column;justify-content:safe center;overflow-y:auto;overscroll-behavior:contain;align-items:stretch;gap:4px;padding:100px 24px 40px;background:radial-gradient(120% 80% at 80% 0%,#0F3020,var(--ink) 60%);clip-path:circle(0 at calc(100% - 50px) 46px);transition:clip-path .6s var(--ease);margin:0}
   .menu-open .nav{clip-path:circle(150% at calc(100% - 50px) 46px)}
+  .menu-open .hdr .bar::before{opacity:0}
   .nav a{font:900 clamp(34px,9vw,52px)/1.1 var(--disp);letter-spacing:-.035em;padding:10px 6px;color:#fff;border-radius:16px;opacity:0;transform:translateY(20px);transition:opacity .4s,transform .5s var(--ease)}
   .menu-open .nav a{opacity:1;transform:none}
   .menu-open .nav li:nth-child(2) a{transition-delay:.05s}.menu-open .nav li:nth-child(3) a{transition-delay:.1s}.menu-open .nav li:nth-child(4) a{transition-delay:.15s}.menu-open .nav li:nth-child(5) a{transition-delay:.2s}.menu-open .nav li:nth-child(6) a{transition-delay:.25s}
